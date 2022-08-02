@@ -1,0 +1,36 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    /* height: 100%; */
+    font-family: "Inter", sans-serif;
+    /* font-family: "Karla", sans-serif; */
+    display: flex;
+    /* flex-direction: row; */
+    justify-content: center;
+    align-items: center;
+    background: #E5E5E5;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 360px;
+    height: 379px;
+    background: #0B2434;
+}
+
+main {
+    width: 20rem;
+    height: 20rem;
+    border-radius: 10px;
+    background: #F5F5F5;
+}
