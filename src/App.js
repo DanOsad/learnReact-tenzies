@@ -1,42 +1,53 @@
 import React, {useState, useEffect} from 'react'
 import Die from './components/Die'
 import {nanoid} from 'nanoid'
+import Confetti from 'react-confetti'
 
 export default function App() {
 
-/**
- * Challenge: Update the `holdDice` function to flip
- * the `isHeld` property on the object in the array
- * that was clicked, based on the `id` prop passed
- * into the function.
- * 
- * Hint: as usual, there's > 1 way to accomplish this.
- * I'll be using `dice.map()` and checking for the `id`
- * of the die to determine which one to flip `isHeld` on,
- * but you can do whichever way makes the most sense to you.
- */
-
+  // CREATES RANDOM DICE
   const randomDice = () => {
     let diceArr = []
     for (let i=0; i<10; i++) {
-      let randomNum = Math.ceil(Math.random() * 6)
       diceArr.push({ 
         id: nanoid(),
-        value: randomNum, 
+        value: Math.ceil(Math.random() * 6), 
         isHeld: false,
       })
     }
     return diceArr
   }
+  
+  // SETS STATES
+  const [dice, setDice] = useState(randomDice)
+  const [tenzies, setTenzies] = useState(false)
 
+  // HOLDS DICE VALUE
   const holdDice = id => {
     setDice(prevDice => prevDice.map(die => {
       return die.id === id ? {...die, isHeld: !die.isHeld} : die
     }))
   }
+
+  // ROLLS DICE IF !isHeld
+  const rollDice = () => {
+    if (tenzies) {
+      setDice(randomDice())
+      setTenzies(prevState => !prevState)
+    } else {
+      setDice(prevDice => prevDice.map(die => {
+        return die.isHeld ? 
+               die : 
+               { 
+                id: nanoid(),
+                value: Math.ceil(Math.random() * 6), 
+                isHeld: false,
+              }
+      }))
+    }
+  }
   
-  const [dice, setDice] = useState(randomDice())
-  
+  // MAPS OUT ALL DICE INTO JSX ELEMENTS
   const diceArr = dice.map(die => {
     return (
       <Die 
@@ -48,12 +59,30 @@ export default function App() {
     )
   })
 
+  // CHECK FOR WIN CONDITIONS
+  useEffect(() => {
+    if (dice.every(die => die.isHeld) && dice.every(die => die.value === dice[0].value)) {
+      setTenzies(prevState => !prevState)
+      console.log("You won!")
+    }
+  }, [dice])
+
+  // COMPONENT RENDER
   return (
     <main>
+      {tenzies && <Confetti />}
+      <h1 className='title'>Tenzies</h1>
+      <p className='description'>Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
       <div className='die-container'>
         {diceArr}
       </div>
-      <button type='button' className='roll-dice-btn' onClick={() => setDice(randomDice)}>Roll</button>
+      <button 
+        type='button' 
+        className='roll-dice-btn' 
+        onClick={() => rollDice()}
+      >
+        { tenzies ? "Reset" : "Roll"}
+      </button>
     </main>
   )
 }
